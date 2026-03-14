@@ -270,9 +270,12 @@ export default function Home() {
             onClick={triggerMaintenance}
             className="flex items-center gap-3 cursor-pointer group"
           >
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 group-hover:scale-105 transition-transform">
-              <span className="text-white font-bold">RG</span>
-            </div>
+            <img 
+              src="https://i.postimg.cc/DzFPd0br/file-00000000f220720bb968d59e32963632.png" 
+              alt="RajGuru Logo" 
+              referrerPolicy="no-referrer"
+              className="w-10 h-10 rounded-xl shadow-lg shadow-emerald-100 group-hover:scale-105 transition-transform"
+            />
             <div>
               <h1 className="text-lg font-bold text-gray-900 leading-tight">RajGuru</h1>
               <p className="text-xs text-gray-500">Coaching App</p>

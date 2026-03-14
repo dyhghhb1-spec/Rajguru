@@ -80,9 +80,12 @@ export default function Login() {
       >
         <div className="p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-200">
-              <span className="text-white text-3xl font-bold">RG</span>
-            </div>
+            <img 
+              src="https://i.postimg.cc/DzFPd0br/file-00000000f220720bb968d59e32963632.png" 
+              alt="RajGuru Logo" 
+              referrerPolicy="no-referrer"
+              className="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border-2 border-emerald-50"
+            />
             <h1 className="text-3xl font-bold text-gray-900">RajGuru</h1>
             <p className="text-gray-500 mt-2">Empowering your learning journey</p>
           </div>

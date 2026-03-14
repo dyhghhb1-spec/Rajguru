@@ -33,11 +33,22 @@ export default function App() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full"
-        />
+        <div className="text-center">
+          <motion.img 
+            src="https://i.postimg.cc/DzFPd0br/file-00000000f220720bb968d59e32963632.png"
+            alt="Logo"
+            referrerPolicy="no-referrer"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-lg"
+          />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+          />
+        </div>
       </div>
     );
   }

@@ -21,6 +21,10 @@ workflows:
         script: npm run build
       - name: Capacitor Sync
         script: npx cap sync android
+      - name: Update App Icon
+        script: |
+          node scripts/update-icon.js
+          npx -y @capacitor/assets generate --android
       - name: Generate Keystore if missing
         script: |
           if [ ! -f android/app/rajguru.keystore ]; then
