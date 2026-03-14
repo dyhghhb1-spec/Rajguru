@@ -27,13 +27,13 @@ workflows:
             echo "Generating temporary keystore..."
             keytool -genkey -v -keystore android/app/rajguru.keystore -alias "rajguru@apk" -keyalg RSA -keysize 2048 -validity 10000 -storepass "rajguru123" -keypass "rajguru123" -dname "CN=Rajguru, OU=App, O=Rajguru, L=Delhi, S=Delhi, C=IN"
           fi
-      - name: Build Android APK and AAB
+      - name: Build Android APK
         script: |
           cd android
-          ./gradlew assembleRelease bundleRelease
+          chmod +x gradlew
+          ./gradlew clean assembleRelease
     artifacts:
       - android/app/build/outputs/apk/release/*.apk
-      - android/app/build/outputs/bundle/release/*.aab
     publishing:
       email:
         recipients:
