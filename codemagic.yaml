@@ -8,6 +8,8 @@ workflows:
         - google_play # Group for Google Play credentials if needed
       vars:
         PACKAGE_NAME: "com.rajguru.app"
+        RELEASE_STORE_FILE: "rajguru.keystore" # Rename 'rajguru apk' to this for better compatibility
+        RELEASE_KEY_ALIAS: "rajguru@apk"
       node: latest
       java: 17
     scripts:
@@ -20,10 +22,12 @@ workflows:
       - name: Build Android APK
         script: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleRelease
       - name: Build Android App Bundle (AAB)
         script: |
           cd android
+          chmod +x gradlew
           ./gradlew bundleRelease
     artifacts:
       - android/app/build/outputs/apk/release/*.apk
