@@ -30,7 +30,7 @@ android {
             def keyAliasVar = project.findProperty('RELEASE_KEY_ALIAS') ?: System.getenv('RELEASE_KEY_ALIAS')
             def keyPasswordVar = project.findProperty('RELEASE_KEY_PASSWORD') ?: System.getenv('RELEASE_KEY_PASSWORD')
 
-            if (storeFileVar) {
+            if (storeFileVar && file(storeFileVar).exists()) {
                 storeFile file(storeFileVar)
                 storePassword storePasswordVar
                 keyAlias keyAliasVar
@@ -43,7 +43,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
-            if (project.findProperty('RELEASE_STORE_FILE') || System.getenv('RELEASE_STORE_FILE')) {
+            def storeFileVar = project.findProperty('RELEASE_STORE_FILE') ?: System.getenv('RELEASE_STORE_FILE')
+            if (storeFileVar && file(storeFileVar).exists()) {
                 signingConfig signingConfigs.release
             }
         }

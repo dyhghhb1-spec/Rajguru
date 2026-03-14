@@ -8,8 +8,10 @@ workflows:
         - google_play # Group for Google Play credentials if needed
       vars:
         PACKAGE_NAME: "com.rajguru.app"
-        RELEASE_STORE_FILE: "rajguru.keystore" # Rename 'rajguru apk' to this for better compatibility
+        RELEASE_STORE_FILE: "rajguru.keystore"
         RELEASE_KEY_ALIAS: "rajguru@apk"
+        RELEASE_STORE_PASSWORD: "rajguru123"
+        RELEASE_KEY_PASSWORD: "rajguru123"
       node: latest
       java: 21
     scripts:
@@ -19,6 +21,12 @@ workflows:
         script: npm run build
       - name: Capacitor Sync
         script: npx cap sync android
+      - name: Generate Keystore if missing
+        script: |
+          if [ ! -f android/app/rajguru.keystore ]; then
+            echo "Generating temporary keystore..."
+            keytool -genkey -v -keystore android/app/rajguru.keystore -alias "rajguru@apk" -keyalg RSA -keysize 2048 -validity 10000 -storepass "rajguru123" -keypass "rajguru123" -dname "CN=Rajguru, OU=App, O=Rajguru, L=Delhi, S=Delhi, C=IN"
+          fi
       - name: Build Android APK
         script: |
           cd android
