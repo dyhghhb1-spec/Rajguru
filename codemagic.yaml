@@ -30,8 +30,7 @@ workflows:
       - name: Build Android APK
         script: |
           cd android
-          chmod +x gradlew
-          ./gradlew clean assembleRelease
+          gradle clean assembleRelease
     artifacts:
       - android/app/build/outputs/apk/release/*.apk
     publishing:
