@@ -1,0 +1,5 @@
+{
+  "name": "RajGuru",
+  "description": "A comprehensive coaching education app featuring live classes, study materials, mock tests, and more.",
+  "requestFramePermissions": ["camera", "microphone"]
+}

@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user information and preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "Live or recorded class session",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["live", "recorded"] },
+        "videoUrl": { "type": "string" },
+        "thumbnailUrl": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "instructor": { "type": "string" }
+      }
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "One-to-one chat thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "participantIds": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastUpdatedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "participantIds"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "file"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["sent", "delivered", "read"] },
+        "deletedFor": { "type": "array", "items": { "type": "string" } },
+        "isDeletedEveryone": { "type": "boolean" }
+      },
+      "required": ["id", "chatId", "senderId", "content"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Logs of sensitive actions like message deletions.",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string", "description": "Type of action (e.g., delete_for_everyone)" },
+        "actorId": { "type": "string", "description": "UID of the user who performed the action" },
+        "targetId": { "type": "string", "description": "ID of the target resource (e.g., messageId)" },
+        "chatId": { "type": "string", "description": "ID of the chat where the action occurred" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the action occurred" },
+        "details": { "type": "string", "description": "Additional context" }
+      },
+      "required": ["action", "actorId", "targetId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    },
+    "/classes/{classId}": {
+      "schema": "Class",
+      "description": "Educational classes"
+    },
+    "/chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Chat threads"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a chat"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLog",
+      "description": "System audit logs"
+    }
+  }
+}

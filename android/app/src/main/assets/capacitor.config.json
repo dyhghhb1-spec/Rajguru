@@ -1,0 +1,6 @@
+{
+	"appId": "com.rajguru.app",
+	"appName": "RajGuru",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

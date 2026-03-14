@@ -1,0 +1,142 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields:
+    //   - uid: string (required)
+    //   - displayName: string
+    //   - email: string (format: email)
+    //   - photoURL: string
+    //   - role: string (enum: ['student', 'teacher', 'admin'])
+    //   - createdAt: timestamp
+    //
+    // Collection: chats
+    // Fields:
+    //   - participantIds: list<string> (required)
+    //   - lastMessage: string
+    //   - lastUpdatedAt: timestamp
+    //   - createdAt: timestamp
+    //
+    // Collection: chats/{chatId}/messages
+    // Fields:
+    //   - senderId: string (required)
+    //   - content: string (required)
+    //   - timestamp: timestamp
+    //   - deletedFor: list<string>
+    //   - isDeletedEveryone: bool
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+         (request.auth.token.email == "dyhghhb1@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // User Profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && 
+                      request.resource.data.role == 'student' &&
+                      hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'role', 'createdAt']);
+      allow update: if isOwner(userId) && 
+                      request.resource.data.role == resource.data.role &&
+                      hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'role', 'createdAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Educational Content
+    match /classes/{classId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    match /notes/{noteId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    match /questions/{questionId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Audit Logs
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated(); // Users can create logs for their actions
+      allow update, delete: if false; // Audit logs are immutable
+    }
+
+    // Chat Rules
+    match /chats/{chatId} {
+      function isParticipant() {
+        return isAuthenticated() && 
+               'participantIds' in resource.data &&
+               resource.data.participantIds.hasAny([request.auth.uid]);
+      }
+      
+      function isNewParticipant() {
+        return isAuthenticated() && 
+               request.resource.data.participantIds.hasAny([request.auth.uid]);
+      }
+
+      allow read: if isParticipant();
+      allow create: if isNewParticipant() && 
+                      hasOnlyAllowedFields(['participantIds', 'lastMessage', 'lastUpdatedAt', 'createdAt']);
+      allow update: if isParticipant() && 
+                      hasOnlyAllowedFields(['participantIds', 'lastMessage', 'lastUpdatedAt', 'createdAt']);
+      allow delete: if isAuthenticated() && (resource.data.participantIds.hasAny([request.auth.uid]) || isAdmin());
+
+      match /messages/{messageId} {
+        function isChatParticipant() {
+          return isAuthenticated() && 
+                 get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds.hasAny([request.auth.uid]);
+        }
+
+        allow read: if isChatParticipant();
+        allow create: if isChatParticipant() && 
+                        request.resource.data.senderId == request.auth.uid &&
+                        hasOnlyAllowedFields(['senderId', 'content', 'timestamp', 'type', 'deletedFor', 'isDeletedEveryone']);
+        allow update: if isChatParticipant() && (
+          // Allow "delete for me" (updating deletedFor array)
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deletedFor'])) ||
+          // Allow "delete for everyone" within 2 hours
+          (request.resource.data.isDeletedEveryone == true && 
+           resource.data.isDeletedEveryone == false &&
+           request.resource.data.senderId == request.auth.uid &&
+           request.time < resource.data.timestamp + duration.value(2, 'h') &&
+           request.resource.data.content == 'This message was deleted' &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isDeletedEveryone', 'content']))
+        );
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}

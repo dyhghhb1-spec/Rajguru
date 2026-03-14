@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RajGuru</string>
+    <string name="title_activity_main">RajGuru</string>
+    <string name="package_name">com.rajguru.app</string>
+    <string name="custom_url_scheme">com.rajguru.app</string>
+</resources>
