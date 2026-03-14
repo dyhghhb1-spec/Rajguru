@@ -23,6 +23,7 @@ workflows:
         script: |
           node scripts/update-icon.js
           npx -y @capacitor/assets generate --android --assetPath assets
+          node scripts/force-android-icons.js
       - name: Capacitor Sync
         script: npx cap sync android
       - name: Generate Keystore if missing
