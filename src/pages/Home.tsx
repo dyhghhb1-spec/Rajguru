@@ -380,12 +380,6 @@ export default function Home() {
           <span className="text-[10px] font-bold mt-1">Tests</span>
         </button>
         <button 
-          onClick={() => setCurrentView('chat')}
-          className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center -mt-10 shadow-lg shadow-emerald-200 text-white cursor-pointer active:scale-90 transition-transform"
-        >
-          <Zap size={24} />
-        </button>
-        <button 
           onClick={triggerMaintenance}
           className={`flex flex-col items-center transition-colors ${currentView === 'library' ? 'text-emerald-600' : 'text-gray-400'}`}
         >
